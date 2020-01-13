@@ -9,7 +9,7 @@ import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(HelloController.class)
+@WebMvcTest(controllers = HelloController.class)
 class HelloControllerTest {
 
     @Autowired

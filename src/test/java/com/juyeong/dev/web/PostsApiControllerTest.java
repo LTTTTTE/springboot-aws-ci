@@ -2,6 +2,7 @@ package com.juyeong.dev.web;
 
 import com.juyeong.dev.domain.posts.Posts;
 import com.juyeong.dev.domain.posts.PostsRepository;
+import com.juyeong.dev.web.dto.PostsResponseDto;
 import com.juyeong.dev.web.dto.PostsSaveRequestDto;
 import com.juyeong.dev.web.dto.PostsUpdateRequestDto;
 import org.junit.jupiter.api.AfterEach;
@@ -10,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 
 import java.util.List;
 
@@ -87,5 +85,44 @@ public class PostsApiControllerTest {
 
         assertThat(allPosts.get(0).getTitle()).isEqualTo(expectedTitle);
         assertThat(allPosts.get(0).getContent()).isEqualTo(expectedContent);
+    }
+
+    @Test
+    public void deletePostTest() {
+        Posts savedPost = postsRepository.save(Posts.builder()
+                .title("타이틀1")
+                .content("콘텐츠1")
+                .author("저자저자")
+                .build());
+
+        Long deleteId = savedPost.getId();
+
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity entity = new HttpEntity(headers);
+        String url = "http://localhost:" + port + "/api/v1/posts/" + deleteId;
+
+        ResponseEntity<Long> responseEntity = restTemplate.exchange(url, HttpMethod.DELETE, entity, Long.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        assertThat(postsRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    public void findByIdTest() {
+        Posts savedPost = postsRepository.save(Posts.builder()
+                .title("타이틀1")
+                .content("콘텐츠1")
+                .author("저자저자")
+                .build());
+
+        Long findId = savedPost.getId();
+
+        String url = "http://localhost:" + port + "/api/v1/posts/" + findId;
+
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).contains("타이틀1");
     }
 }

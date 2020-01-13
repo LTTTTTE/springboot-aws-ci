@@ -1,5 +1,8 @@
 package com.juyeong.dev.web;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.juyeong.dev.service.posts.PostsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,10 +15,13 @@ public class IndexControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @Test
-    public void indexTest() {
-        String body = this.restTemplate.getForObject("/", String.class);
+    @Autowired
+    private PostsService postsService;
 
-        assertThat(body).contains("하이");
+    @Test
+    public void indexTest() throws JsonProcessingException {
+        String responseBody = this.restTemplate.getForObject("/", String.class);
+
+        assertThat(responseBody).contains("</body>");
     }
 }
